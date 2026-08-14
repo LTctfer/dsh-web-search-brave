@@ -1,9 +1,13 @@
 {
-  "name": "@ltctfer/dsh-web-search-brave",
+  "name": "@dsh-ltctfer/dsh-web-search-brave",
   "description": "Brave Search API-backed search provider for the DeepSeek Harness web capability seam (ctx.web). One search is one HTTP request - no model turn.",
   "version": "0.1.0",
   "publishConfig": {
     "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LTctfer/dsh-web-search-brave.git"
   },
   "type": "module",
   "main": "lib/index.js",
