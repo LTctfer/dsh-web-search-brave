@@ -51,7 +51,7 @@ dsh plugin --profile web add link:$(pwd)
 
 插件按以下顺序解析 key，先命中的生效：
 
-1. **设置页 `apiKey`（推荐，最简单）**：在 DSH 设置页的 `web-search-brave` 段直接粘贴你的 Brave 订阅 token（`role('secret')`，不会出现在 `describe()` 输出中）；
+1. **设置页 `apiKey`（推荐，最简单）**：打开 DSH 设置页 →「插件」标签 →「Web 搜索（Brave）」卡片，在 **API Key** 输入框粘贴你的 Brave 订阅 token 并保存（`role('secret')`，不显示明文、不出现在 `describe()` 输出中）；同一卡片还能调 `apiKeyEnv` / `count` / `country` / `searchLang` / `freshness` / `proxy` 等参数；
 2. **环境变量**：启动 dsh 前导出 `BRAVE_API_KEY`（可经 `apiKeyEnv` 改名），如 `export BRAVE_API_KEY=<你的令牌>`；
 3. **凭据文件**：在 `$DSH_HOME/.credentials.yaml` 中追加 `BRAVE_API_KEY: <你的令牌>`。
 

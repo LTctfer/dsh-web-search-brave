@@ -51,7 +51,7 @@ The plugin registers a `web-search-brave` settings section; pin the provider in 
 
 The plugin resolves the key in order; the first hit wins:
 
-1. **Settings-page `apiKey` (recommended, simplest)**: paste your Brave subscription token directly in the `web-search-brave` section of the DSH settings page (`role('secret')`, never shown in `describe()` output);
+1. **Settings-page `apiKey` (recommended, simplest)**: open the DSH settings page, go to the "Plugins" tab, find the "Web Search (Brave)" card, paste your Brave subscription token into the **API Key** field and save (`role('secret')`, never shown in plain text or `describe()` output); the same card also tunes `apiKeyEnv` / `count` / `country` / `searchLang` / `freshness` / `proxy`;
 2. **Environment variable**: export `BRAVE_API_KEY` before launching dsh (renameable via `apiKeyEnv`), e.g. `export BRAVE_API_KEY=<your token>`;
 3. **Credentials file**: append `BRAVE_API_KEY: <your token>` to `$DSH_HOME/.credentials.yaml`.
 
