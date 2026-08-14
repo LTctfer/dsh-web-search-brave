@@ -11,7 +11,8 @@ It calls the official Brave Search endpoint `https://api.search.brave.com/res/v1
 - Full error semantics: HTTP failures, missing credentials, and caller cancellation map to `WEB_PROVIDER_ERROR` / `WEB_PROVIDER_CREDENTIAL_MISSING` / `WEB_ABORTED`;
 - Cancellation support (`AbortSignal`), result count shrinks to the caller's `maxResults`, dedup by URL;
 - Optional `country` / `search_lang` / `freshness` parameters;
-- The token never lives in the plugin: it resolves by reference through the DSH credentials service (default `BRAVE_API_KEY`), with environment variable and literal fallbacks.
+- **Custom API key, three ways**: paste `apiKey` in the settings page (easiest), export an environment variable (default `BRAVE_API_KEY`, renameable), or write it into the DSH credentials file - when you share the plugin, the other person just fills in their own Brave subscription token;
+- **Built-in agent guidance**: the system prompt announces the plugin and how the key resolves, so when a new user hits a missing-credential error, the agent can walk them through it.
 
 ## Install
 
@@ -46,18 +47,15 @@ The plugin registers a `web-search-brave` settings section; pin the provider in 
 
 > The profile's `cordis.patch.yml` is hot-watched by dsh - changes apply without a restart.
 
-### API key
+### API key (pick any one)
 
-One of three ways (priority: literal `apiKey` > credential reference > launch environment):
+The plugin resolves the key in order; the first hit wins:
 
-1. Credentials file (recommended) - append to `$DSH_HOME/.credentials.yaml`:
+1. **Settings-page `apiKey` (recommended, simplest)**: paste your Brave subscription token directly in the `web-search-brave` section of the DSH settings page (`role('secret')`, never shown in `describe()` output);
+2. **Environment variable**: export `BRAVE_API_KEY` before launching dsh (renameable via `apiKeyEnv`), e.g. `export BRAVE_API_KEY=<your token>`;
+3. **Credentials file**: append `BRAVE_API_KEY: <your token>` to `$DSH_HOME/.credentials.yaml`.
 
-   ```yaml
-   BRAVE_API_KEY: <your Brave subscription token>
-   ```
-
-2. Environment variable: export `BRAVE_API_KEY` before launching dsh;
-3. Literal: put `apiKey: <token>` directly in the plugin `config` (marked `role('secret')`, never shown in `describe()` output).
+> When sharing the plugin, the other person only needs way 1 - fill in their own key on the settings page, no files or config to touch.
 
 ### Settings
 
@@ -71,6 +69,8 @@ One of three ways (priority: literal `apiKey` > credential reference > launch en
 | `searchLang` | - | Search language (e.g. `zh-hans`, `en`) |
 | `freshness` | - | Freshness filter (e.g. `pd`, `pw`, `pm`, `py`, or ISO date ranges) |
 | `proxy` | env vars | HTTP proxy URL; defaults to the launch environment's `HTTPS_PROXY` / `HTTP_PROXY`. Node's fetch does not read proxy variables, and when `api.search.brave.com` DNS is polluted (resolving to a wrong IP), routing through a proxy resolves the domain proxy-side and bypasses the pollution |
+| `announceToAgent` | `true` | Announce the plugin in the system prompt (the agent can then guide a user to configure their own key) |
+| `enabled` | `true` | Master switch; when off, the search provider is not registered |
 
 ## Verify
 

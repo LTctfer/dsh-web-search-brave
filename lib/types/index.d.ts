@@ -16,11 +16,17 @@ export declare const BRAVE_PROVIDER_ID = "brave-official";
 export declare const BRAVE_DEFAULT_BASE_URL = "https://api.search.brave.com/res/v1/web/search";
 export declare const BRAVE_DEFAULT_COUNT = 10;
 export declare const BRAVE_MAX_COUNT = 20;
+/** Order of the announcement section within the tool-guidance band. */
+export declare const ANNOUNCEMENT_ORDER = 150;
+/** Model-facing announcement: provider presence, key resolution, and user guidance. */
+export declare const BRAVE_GUIDANCE: string;
 /** Settings namespace carrying this provider's token reference and request options. */
 export declare const WEB_SEARCH_BRAVE_SETTINGS_NAMESPACE: import('@deepseek-ai/dsh-settings').SettingsNamespace<typeof Config>;
 /**
  * Config for the Brave search provider. All fields are optional; `apiKeyEnv`
- * defaults to `BRAVE_API_KEY` and resolves through the credentials service.
+ * defaults to `BRAVE_API_KEY`. The key resolves in order: literal `apiKey`
+ * (settings section), the `apiKeyEnv` environment variable (launch
+ * environment, then process environment), then the credentials service.
  * `proxy` falls back to `HTTPS_PROXY` / `HTTP_PROXY` from the launch
  * environment.
  */
@@ -33,6 +39,8 @@ export declare const Config: z<{
     searchLang?: string;
     freshness?: string;
     proxy?: string;
+    announceToAgent?: boolean;
+    enabled?: boolean;
 }>;
 /**
  * The Brave Search API-backed provider. Implements {@link WebSearchProvider};

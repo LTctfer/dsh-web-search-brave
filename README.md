@@ -11,7 +11,8 @@
 - 完整错误语义：HTTP 失败、凭据缺失、调用方取消分别映射为 `WEB_PROVIDER_ERROR` / `WEB_PROVIDER_CREDENTIAL_MISSING` / `WEB_ABORTED`；
 - 支持取消（`AbortSignal`）、按调用方 `maxResults` 自动收敛请求条数、按 URL 去重；
 - 可选 `country` / `search_lang` / `freshness` 参数；
-- 密钥不落盘于插件：通过 DSH 凭据服务按引用解析（默认 `BRAVE_API_KEY`），也支持环境变量或字面量配置。
+- **自定义 API key 三选一**：设置页直接填 `apiKey`（最简单）、导出环境变量（默认 `BRAVE_API_KEY`，可改名）、或写入 DSH 凭据文件 —— 把插件分享给别人时，对方只需填入自己的 Brave 订阅 token 即可；
+- **内置 agent 引导**：系统提示词会宣告插件与 key 的配置方法，新用户遇到凭据缺失时，agent 能直接指导其配置。
 
 ## 安装
 
@@ -46,18 +47,15 @@ dsh plugin --profile web add link:$(pwd)
 
 > profile 的 `cordis.patch.yml` 被 dsh 热监视，保存后无需重启即可生效。
 
-### 密钥
+### 密钥（三选一，任选其一即可）
 
-三种方式任选其一（优先级：字面量 `apiKey` > 凭据引用 > 启动环境变量）：
+插件按以下顺序解析 key，先命中的生效：
 
-1. 凭据文件（推荐）：在 `$DSH_HOME/.credentials.yaml` 中追加：
+1. **设置页 `apiKey`（推荐，最简单）**：在 DSH 设置页的 `web-search-brave` 段直接粘贴你的 Brave 订阅 token（`role('secret')`，不会出现在 `describe()` 输出中）；
+2. **环境变量**：启动 dsh 前导出 `BRAVE_API_KEY`（可经 `apiKeyEnv` 改名），如 `export BRAVE_API_KEY=<你的令牌>`；
+3. **凭据文件**：在 `$DSH_HOME/.credentials.yaml` 中追加 `BRAVE_API_KEY: <你的令牌>`。
 
-   ```yaml
-   BRAVE_API_KEY: <你的 Brave 订阅令牌>
-   ```
-
-2. 环境变量：启动 dsh 前导出 `BRAVE_API_KEY`；
-3. 字面量：把 `apiKey: <令牌>` 直接写进插件 `config`（`role('secret')`，不会出现在 `describe()` 输出中）。
+> 把插件分享给别人时，对方只需按**方式一**在设置页填入自己的 key，无需改任何文件或配置。
 
 ### 配置项
 
@@ -71,6 +69,8 @@ dsh plugin --profile web add link:$(pwd)
 | `searchLang` | — | 搜索语言（如 `zh-hans`、`en`） |
 | `freshness` | — | 时效过滤（如 `pd`、`pw`、`pm`、`py` 或 ISO 日期区间） |
 | `proxy` | 环境变量 | HTTP 代理 URL；默认取启动环境的 `HTTPS_PROXY` / `HTTP_PROXY`。Node 的 fetch 不读代理环境变量，且当 `api.search.brave.com` 的 DNS 被污染（解析到错误 IP）时，走代理可让域名在代理侧解析、绕过污染 |
+| `announceToAgent` | `true` | 是否在系统提示词中宣告插件（agent 可据此指导用户配置自己的 key） |
+| `enabled` | `true` | 总开关；关闭后不注册搜索提供方 |
 
 ## 验证
 
