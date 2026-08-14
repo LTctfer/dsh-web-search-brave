@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-web-search-brave
+# @ltctfer/dsh-web-search-brave
 
 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness)（DSH）的 **Brave Search API** 网络搜索提供方插件，挂载到官方 web 能力接缝（`ctx.web`）。一次搜索就是一次 HTTP 请求——不需要模型参与，比 DeepSeek 官方提供方（每次搜索消耗一次完整模型轮次）更轻、更快。
 
@@ -18,7 +18,7 @@
 ### 方式一：从 npm 安装（发布后）
 
 ```sh
-dsh plugin --profile web add @deepseek-ai/dsh-web-search-brave
+dsh plugin --profile web add @ltctfer/dsh-web-search-brave
 ```
 
 ### 方式二：本地路径安装（开发调试）
@@ -38,7 +38,7 @@ dsh plugin --profile web add link:$(pwd)
 
 - insert:
     - id: web-search-brave
-      name: '@deepseek-ai/dsh-web-search-brave'
+      name: '@ltctfer/dsh-web-search-brave'
       config:
         apiKeyEnv: BRAVE_API_KEY
         count: 10
@@ -70,6 +70,7 @@ dsh plugin --profile web add link:$(pwd)
 | `country` | — | 两位国家/地区码（如 `cn`、`us`） |
 | `searchLang` | — | 搜索语言（如 `zh-hans`、`en`） |
 | `freshness` | — | 时效过滤（如 `pd`、`pw`、`pm`、`py` 或 ISO 日期区间） |
+| `proxy` | 环境变量 | HTTP 代理 URL；默认取启动环境的 `HTTPS_PROXY` / `HTTP_PROXY`。Node 的 fetch 不读代理环境变量，且当 `api.search.brave.com` 的 DNS 被污染（解析到错误 IP）时，走代理可让域名在代理侧解析、绕过污染 |
 
 ## 验证
 

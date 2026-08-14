@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-web-search-brave
+# @ltctfer/dsh-web-search-brave
 
 A **Brave Search API**-backed web search provider plugin for [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) (DSH), mounted on the official web capability seam (`ctx.web`). One search is one HTTP request - no model turn - which is lighter and faster than the official DeepSeek provider (a full model round-trip per search).
 
@@ -18,7 +18,7 @@ It calls the official Brave Search endpoint `https://api.search.brave.com/res/v1
 ### From npm (after publishing)
 
 ```sh
-dsh plugin --profile web add @deepseek-ai/dsh-web-search-brave
+dsh plugin --profile web add @ltctfer/dsh-web-search-brave
 ```
 
 ### Local path (development)
@@ -38,7 +38,7 @@ The plugin registers a `web-search-brave` settings section; pin the provider in 
 
 - insert:
     - id: web-search-brave
-      name: '@deepseek-ai/dsh-web-search-brave'
+      name: '@ltctfer/dsh-web-search-brave'
       config:
         apiKeyEnv: BRAVE_API_KEY
         count: 10
@@ -70,6 +70,7 @@ One of three ways (priority: literal `apiKey` > credential reference > launch en
 | `country` | - | Two-letter country code (e.g. `cn`, `us`) |
 | `searchLang` | - | Search language (e.g. `zh-hans`, `en`) |
 | `freshness` | - | Freshness filter (e.g. `pd`, `pw`, `pm`, `py`, or ISO date ranges) |
+| `proxy` | env vars | HTTP proxy URL; defaults to the launch environment's `HTTPS_PROXY` / `HTTP_PROXY`. Node's fetch does not read proxy variables, and when `api.search.brave.com` DNS is polluted (resolving to a wrong IP), routing through a proxy resolves the domain proxy-side and bypasses the pollution |
 
 ## Verify
 

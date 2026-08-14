@@ -21,6 +21,8 @@ export declare const WEB_SEARCH_BRAVE_SETTINGS_NAMESPACE: import('@deepseek-ai/d
 /**
  * Config for the Brave search provider. All fields are optional; `apiKeyEnv`
  * defaults to `BRAVE_API_KEY` and resolves through the credentials service.
+ * `proxy` falls back to `HTTPS_PROXY` / `HTTP_PROXY` from the launch
+ * environment.
  */
 export declare const Config: z<{
     apiKey?: string;
@@ -30,6 +32,7 @@ export declare const Config: z<{
     country?: string;
     searchLang?: string;
     freshness?: string;
+    proxy?: string;
 }>;
 /**
  * The Brave Search API-backed provider. Implements {@link WebSearchProvider};
@@ -54,6 +57,7 @@ export interface BraveSearchOptions {
     readonly country?: string;
     readonly searchLang?: string;
     readonly freshness?: string;
+    readonly proxy?: string;
     readonly recordRequest?: (request: {
         readonly endpoint: string;
     }) => void;
