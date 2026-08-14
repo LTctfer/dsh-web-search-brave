@@ -1,0 +1,89 @@
+# @deepseek-ai/dsh-web-search-brave
+
+[DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness)（DSH）的 **Brave Search API** 网络搜索提供方插件，挂载到官方 web 能力接缝（`ctx.web`）。一次搜索就是一次 HTTP 请求——不需要模型参与，比 DeepSeek 官方提供方（每次搜索消耗一次完整模型轮次）更轻、更快。
+
+调用 Brave 官方搜索端点 `https://api.search.brave.com/res/v1/web/search`，把结构化 `web.results[]` 映射为接缝规范化的 `WebSearchResult`，模型看到的仍是稳定的 `web_search` 工具。
+
+## 特性
+
+- 纯检索端点：一次搜索 = 一次 HTTP 请求，无模型轮次开销；
+- 结构化映射：来源严格来自 `web.results[]`，绝不从模型文本中抓取 URL；
+- 完整错误语义：HTTP 失败、凭据缺失、调用方取消分别映射为 `WEB_PROVIDER_ERROR` / `WEB_PROVIDER_CREDENTIAL_MISSING` / `WEB_ABORTED`；
+- 支持取消（`AbortSignal`）、按调用方 `maxResults` 自动收敛请求条数、按 URL 去重；
+- 可选 `country` / `search_lang` / `freshness` 参数；
+- 密钥不落盘于插件：通过 DSH 凭据服务按引用解析（默认 `BRAVE_API_KEY`），也支持环境变量或字面量配置。
+
+## 安装
+
+### 方式一：从 npm 安装（发布后）
+
+```sh
+dsh plugin --profile web add @deepseek-ai/dsh-web-search-brave
+```
+
+### 方式二：本地路径安装（开发调试）
+
+```sh
+dsh plugin --profile web add link:$(pwd)
+```
+
+## 配置
+
+插件注册 `web-search-brave` 设置段，然后在 `web` 接缝中钉住提供方。以 profile 的 `cordis.patch.yml` 为例：
+
+```yaml
+- id: web
+  config:
+    searchProvider: brave-official
+
+- insert:
+    - id: web-search-brave
+      name: '@deepseek-ai/dsh-web-search-brave'
+      config:
+        apiKeyEnv: BRAVE_API_KEY
+        count: 10
+```
+
+> profile 的 `cordis.patch.yml` 被 dsh 热监视，保存后无需重启即可生效。
+
+### 密钥
+
+三种方式任选其一（优先级：字面量 `apiKey` > 凭据引用 > 启动环境变量）：
+
+1. 凭据文件（推荐）：在 `$DSH_HOME/.credentials.yaml` 中追加：
+
+   ```yaml
+   BRAVE_API_KEY: <你的 Brave 订阅令牌>
+   ```
+
+2. 环境变量：启动 dsh 前导出 `BRAVE_API_KEY`；
+3. 字面量：把 `apiKey: <令牌>` 直接写进插件 `config`（`role('secret')`，不会出现在 `describe()` 输出中）。
+
+### 配置项
+
+| 字段 | 默认值 | 说明 |
+| --- | --- | --- |
+| `apiKey` | — | 字面量订阅令牌（secret），设置时优先于凭据引用 |
+| `apiKeyEnv` | `BRAVE_API_KEY` | 凭据引用名，经凭据服务或启动环境解析 |
+| `baseURL` | `https://api.search.brave.com/res/v1/web/search` | Brave 搜索 API 端点 |
+| `count` | `10` | 每次搜索请求的结果条数（1–20，受调用方 `maxResults` 约束） |
+| `country` | — | 两位国家/地区码（如 `cn`、`us`） |
+| `searchLang` | — | 搜索语言（如 `zh-hans`、`en`） |
+| `freshness` | — | 时效过滤（如 `pd`、`pw`、`pm`、`py` 或 ISO 日期区间） |
+
+## 验证
+
+```sh
+dsh --profile web --dump-config   # 确认 web-search-brave 条目已挂载
+```
+
+或在对话中直接让模型使用 `web_search` 工具。
+
+## 许可
+
+MIT。本插件的结构参考了官方 [@deepseek-ai/dsh-web-search-deepseek](https://github.com/deepseek-ai/deepseek-harness)（MIT），按 web 能力接缝的提供方规范实现。
+
+## 相关链接
+
+- [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness)
+- [Brave Search API](https://brave.com/search/api/)
