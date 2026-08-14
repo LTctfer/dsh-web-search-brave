@@ -1,6 +1,6 @@
 /** dsh-web-search-brave — browser half types (hand-built bundle, no build step). */
 
-/** Client plugin contract: needs the slots registry; settingsScope is resolved lazily. */
+/** Client plugin contract: needs the slots registry and the settings scope service. */
 export declare const inject: string[]
 export declare function apply(ctx: {
   get(name: string): unknown
