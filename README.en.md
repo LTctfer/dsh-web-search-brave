@@ -80,6 +80,10 @@ dsh --profile web --dump-config   # confirm the web-search-brave entry is mounte
 
 Or just ask the model to use the `web_search` tool in a conversation.
 
+## Thanks
+
+Thanks to the [linux.do](https://linux.do/) community — a great place for DSH plugin development and discussion.
+
 ## License
 
 MIT. The plugin structure follows the official [@deepseek-ai/dsh-web-search-deepseek](https://github.com/deepseek-ai/deepseek-harness) (MIT) and implements the web capability seam's provider contract.

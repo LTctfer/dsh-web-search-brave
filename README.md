@@ -88,6 +88,10 @@ dsh --profile web --dump-config   # 确认 web-search-brave 条目已挂载
 
 或在对话中直接让模型使用 `web_search` 工具。
 
+## 致谢
+
+感谢 [linux.do](https://linux.do/) 社区——DSH 插件开发与交流的宝贵阵地。
+
 ## 许可
 
 MIT。本插件的结构参考了官方 [@deepseek-ai/dsh-web-search-deepseek](https://github.com/deepseek-ai/deepseek-harness)（MIT），按 web 能力接缝的提供方规范实现。
