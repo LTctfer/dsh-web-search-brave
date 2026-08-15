@@ -30,9 +30,12 @@ dsh plugin --profile web add link:$(pwd)
 
 ## Configuration
 
-The plugin registers a `web-search-brave` settings section; pin the provider in the `web` seam. Example for the profile's `cordis.patch.yml`:
+The plugin registers a `web-search-brave` settings section; you must **override the provider** in the `web` seam. This step is mandatory: the base bundle (`dsh-base`) pins `web.searchProvider` to `deepseek-official`, so without a `DEEPSEEK_API_KEY` every `web_search` call fails outright. Example for the profile's `cordis.patch.yml`:
 
 ```yaml
+# web_search provider: the base bundle pins `deepseek-official` (needs
+# DEEPSEEK_API_KEY). Override it to the Brave-backed provider (this plugin),
+# whose key lives in the `web-search-brave` settings section.
 - id: web
   config:
     searchProvider: brave-official

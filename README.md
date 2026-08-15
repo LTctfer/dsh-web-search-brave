@@ -30,9 +30,12 @@ dsh plugin --profile web add link:$(pwd)
 
 ## 配置
 
-插件注册 `web-search-brave` 设置段，然后在 `web` 接缝中钉住提供方。以 profile 的 `cordis.patch.yml` 为例：
+插件注册 `web-search-brave` 设置段，然后在 `web` 接缝中**覆盖提供方**。这一步是必须的：DSH 基础包（`dsh-base`）把 `web` 的 `searchProvider` 固定为 `deepseek-official`，未配置 `DEEPSEEK_API_KEY` 的环境里每次 `web_search` 都会直接报错。以 profile 的 `cordis.patch.yml` 为例：
 
 ```yaml
+# web_search provider: the base bundle pins `deepseek-official` (needs
+# DEEPSEEK_API_KEY). Override it to the Brave-backed provider (this plugin),
+# whose key lives in the `web-search-brave` settings section.
 - id: web
   config:
     searchProvider: brave-official
