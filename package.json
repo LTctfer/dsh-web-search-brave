@@ -26,8 +26,7 @@
   "dsh": {
     "client": {
       "inject": [
-        "slots",
-        "settingsScope"
+        "slots"
       ],
       "platform": "web"
     }
@@ -35,6 +34,7 @@
   "files": [
     "lib/index.js",
     "lib/client.js",
+    "lib/routes.js",
     "lib/types/**/*.d.ts",
     "README.md",
     "LICENSE"

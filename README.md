@@ -47,11 +47,19 @@ dsh plugin --profile web add link:$(pwd)
 
 > profile 的 `cordis.patch.yml` 被 dsh 热监视，保存后无需重启即可生效。
 
+### 设置卡片的原理
+
+DSH 设置页「插件」标签的官方设置表单走 `settingsScope` 服务，但宿主 apiproxy 只对**硬编码白名单**里的 namespace 开放（`agent-loop` / `shell` / `web-search-deepseek` 等），第三方插件的 namespace 一律返回「设置段不可用」。因此本插件自建了一个 **loopback settings bridge**：
+
+- 宿主侧注册 `GET/POST /api/dsh-web-search-brave/settings`（回环围栏：仅 127.0.0.1 + 同源标记放行），`GET` 返回脱敏后的 namespace 视图（schema / value / revision / writable），`POST` 把 path ops 交给官方 `settings.mutate` 落盘（校验、revision 锁、持久化与官方表单完全一致）；
+- 客户端「brave 搜索」卡片直接读写该路由，不经过官方 `settingsScope`；保存后搜索提供方即时生效；
+- 设置路由独立于 `enabled` 开关注册——即使提供方被关闭，设置页卡片仍可打开并重新启用。
+
 ### 密钥（三选一，任选其一即可）
 
 插件按以下顺序解析 key，先命中的生效：
 
-1. **设置页 `apiKey`（推荐，最简单）**：打开 DSH 设置页 →「插件」标签 →「Web 搜索（Brave）」卡片，在 **API Key** 输入框粘贴你的 Brave 订阅 token 并保存（`role('secret')`，不显示明文、不出现在 `describe()` 输出中）；同一卡片还能调 `apiKeyEnv` / `count` / `country` / `searchLang` / `freshness` / `proxy` 等参数；
+1. **设置页 `apiKey`（推荐，最简单）**：打开 DSH 设置页 →「插件」标签 →「brave 搜索」卡片，在 **API Key** 输入框粘贴你的 Brave 订阅 token 并保存（`role('secret')`，不显示明文、不出现在 `describe()` 输出中）；同一卡片还能调 `apiKeyEnv` / `count` / `country` / `searchLang` / `freshness` / `proxy` 等参数；
 2. **环境变量**：启动 dsh 前导出 `BRAVE_API_KEY`（可经 `apiKeyEnv` 改名），如 `export BRAVE_API_KEY=<你的令牌>`；
 3. **凭据文件**：在 `$DSH_HOME/.credentials.yaml` 中追加 `BRAVE_API_KEY: <你的令牌>`。
 
